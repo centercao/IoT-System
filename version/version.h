@@ -1,0 +1,5 @@
+#ifndef VERSION_H
+#define VERSION_H
+#define VERSION_NUMBER v 0.1.0 b20171213082
+
+#endif // VERSION_H
