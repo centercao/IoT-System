@@ -5,15 +5,14 @@ const views = require('koa-views');
 const json = require('koa-json');
 // const onerror = require('koa-onerror');
 const bodyparser = require('koa-bodyparser');
-const logger = require('koa-logger');
-const ApiError = require('./middlewares/apiError');
+const Logger = require('koa-logger');
 const LogFile = require('./middlewares/logHelper');
 const Redis = require("./middlewares/redisHelper");
 const redis =new Redis("127.0.0.1",6379,"root@2017@2018");
 const apiError = require("./middlewares/apiError");
 const FormatOutput = require("./middlewares/formatOutput");
 const formatOutput = new FormatOutput();
-const logFile = new LogFile({
+const logger = new LogFile({
 	appenders: {file: {filename: "./logs/api.log", maxLogSize: 2048000}},
 	categories: {
 		file:{appenders: ['file'], level: 'debug'}
@@ -25,12 +24,13 @@ const logFile = new LogFile({
 // onerror(app);
 
 // middlewares
+
 app.use(cors()); // 跨域
 app.use(bodyparser({
 	enableTypes: ['json', 'form', 'text']
 }));
 app.use(json());
-app.use(logger());
+app.use(Logger());
 app.use(require('koa-static')(__dirname + '/public'));
 
 app.use(views(__dirname + '/views', {
@@ -40,43 +40,39 @@ app.use(views(__dirname + '/views', {
 app.use(async (ctx, next) => {
 	const start = new Date();
 	try {
-		ctx.logger = logFile;
-		ctx.redis = redis;
-		ctx.apiError = apiError;
+		ctx.state.redis = redis;
+		ctx.state.ApiError = apiError;
+		ctx.length =6;
 		await next();
 		const ms = new Date() - start;
 		console.log(`${ctx.method} ${ctx.url} - ${ms}ms ctx.response.status: ${ctx.response.status}`);
 		//记录响应日志
-		// logFile.debug(`${ctx.method} ${ctx.url} - ${ms}ms ctx.response.status: ${ctx.response.status}`);
-		logFile.debug(formatOutput.formatRes(ctx,ms));
+		// logger.debug(`${ctx.method} ${ctx.url} - ${ms}ms ctx.response.status: ${ctx.response.status}`);
+		logger.debug(formatOutput.formatRes(ctx,ms));
 	} catch (error) {
 		var ms = new Date() - start;
 		console.log(`${ctx.method} ${ctx.url} - ${ms}ms ctx.response.status: ${ctx.response.status}`);
 		// 错误信息开始
-		// logFile.error(`${ctx.method} ${ctx.url} - ${ms}ms ctx.response.status: ${ctx.response.status}`);
-		logFile.error(formatOutput.formatError(ctx,error,ms));
+		// logger.error(`${ctx.method} ${ctx.url} - ${ms}ms ctx.response.status: ${ctx.response.status}`);
+		logger.error(formatOutput.formatError(ctx,error,ms));
 	}
 });
-// 格式化输出 (正常/异常数据）
+// Format output
 app.use(async (ctx, next) => {
 	try {
 		await next();
-		if (ctx.status != 200) {// system http code
-			let error = new Error(ctx.message);
-			error.status = ctx.status;
-			throw error;
-		}
+		/*if (ctx.status != 200) {// system http code
+			ctx.throw(ctx.status, ctx.message);
+		}*/
 	} catch (error) {
-		// 格式化错误(404: run time error,error of Third party module;Custom error)
+		var obj = Object.prototype.toString.call(error).match(/^\[object\s(.*)\]$/)[1];
+		// format error(404: run time error,error of Third party module:422,Custom error)
 		ctx.body = {
-			status: error.status || 500,
-			name:error.name || "SystemError",
-			message: error.message,
-			debug: error.stack.replace(/Error\n/).split(/\n/)[1].replace(/^\s+|\s+$/, "")
+			message:error.message,
+			status:error.status || 422,
 		};
-		ctx.status = ctx.body.status >= 1000?500:ctx.body.status;
-		// 继续抛，让外层中间件处理日志,包括系统异常
-		throw error;
+		ctx.status = ctx.body.status;
+		throw error; // ->logs
 	}
 });
 

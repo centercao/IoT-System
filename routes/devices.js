@@ -44,6 +44,8 @@ router.patch('/:id', function (ctx, next) {
 router.head('/:id', function (ctx, next) {
 	let id = ctx.params.id;
 	var status = ctx.response.status;
+	ctx.set("Access-Control-Expose-Headers", "abcd"); // 允许自定义响应头信息
+	ctx.set({abcd:1234});
 	ctx.body = {head:`this is a devices/${id}  head response!`};
 });
 // Find a model instance by {{id}} from the data source.

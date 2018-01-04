@@ -28,11 +28,50 @@ class ApiError extends Error{
 		this.status = error_info.status;
 		this.message = error_info.message;
 	}
+	static get(status){
+		let error_info;
+		if (status) {
+			error_info = error_map.get(status);
+		}
+		
+		//如果没有对应的错误信息，默认'未知错误'
+		if (!status) {
+			status = ApiError.UNKNOW_ERROR;
+			error_info = error_map.get(status);
+		}
+		return error_info;
+	}
+	static getMessage(status){
+		let error_info;
+		if (status) {
+			error_info = error_map.get(status);
+		}
+		
+		//如果没有对应的错误信息，默认'未知错误'
+		if (!status) {
+			status = ApiError.UNKNOW_ERROR;
+			error_info = error_map.get(status);
+		}
+		return error_info.message;
+	}
+	static getName(status){
+		let error_info;
+		if (status) {
+			error_info = error_map.get(status);
+		}
+		
+		//如果没有对应的错误信息，默认'未知错误'
+		if (!status) {
+			status = ApiError.UNKNOW_ERROR;
+			error_info = error_map.get(status);
+		}
+		return error_info.name;
+	}
 }
 ApiError.UNKNOW_ERROR = 1000;
 error_map.set(ApiError.UNKNOW_ERROR, {name:"GeneralError", status: ApiError.UNKNOW_ERROR , message: '未知错误' });
 
-ApiError.DATA_TYPE= 1001;
-error_map.set(ApiError.DATA_TYPE, {name:"ReplyError", status: ApiError.DATA_TYPE , message: '数据类型错误' });
+ApiError.DATA_TEMPTY= 1001;
+error_map.set(ApiError.DATA_TEMPTY, {name:"ReplyError", status: ApiError.DATA_TEMPTY , message: '参数为空' });
 
 module.exports = ApiError;
