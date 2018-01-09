@@ -5,7 +5,7 @@ function FormatOutput() {
 
 }
 FormatOutput.prototype={
-	formatReqLog:function (req, resTime) { //格式化请求日志
+	formatReqLog:function (req) { //格式化请求日志(共同)
 		var method = req.method;
 		//访问方法
 		var logText = "request method: " + method + "\n";
@@ -21,10 +21,7 @@ FormatOutput.prototype={
 			// startTime = req.query.requestStartTime;
 		} else {
 			logText += "request body: " + "\n" + JSON.stringify(req.body) + "\n";
-			// startTime = req.body.requestStartTime;
 		}
-		//服务器响应时间
-		logText += "response time: " + resTime + "\n";
 		
 		return logText;
 	},
@@ -34,13 +31,12 @@ FormatOutput.prototype={
 		
 		// 添加请求日志
 		logText += this.formatReqLog(ctx.request, resTime);
-		
 		// 响应状态码
 		logText += "response status: " + ctx.status + "\n";
-		
 		// 响应内容
-		logText += "response body: " + "\n" + JSON.stringify(ctx.body) + "\n";
-		
+		logText += "response body: " + JSON.stringify(ctx.body) + "\n";
+		//服务器响应时间
+		logText += "response time: " + resTime + "\n";
 		// 响应日志结束
 		logText += "*************** response log end ***************" + "\n";
 		
@@ -53,7 +49,7 @@ FormatOutput.prototype={
 		var logText = "\n" + "*************** error log start ***************" + "\n";
 		
 		//添加请求日志
-		logText += this.formatReqLog(ctx.request, resTime);
+		logText += this.formatReqLog(ctx.request);
 		// 响应状态码
 		logText += "response status: " + ctx.status + "\n";
 		//错误code
@@ -64,6 +60,8 @@ FormatOutput.prototype={
 		logText += "err message: " + err.message + "\n";
 		//错误详情
 		logText += "err stack: " + err.stack + "\n";
+		//服务器响应时间
+		logText += "response time: " + resTime + "\n";
 		
 		//错误信息结束
 		logText += "*************** error log end ***************" + "\n";

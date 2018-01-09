@@ -54,8 +54,8 @@ app.use(bodyparser({
 app.use(json());
 
 // debug log
-/*const Logger = require('koa-logger');
-app.use(Logger());*/
+const Logger = require('koa-logger');
+app.use(Logger());
 // static file dir
 /*app.use(require('koa-static')(__dirname + '/public'));
 
@@ -66,9 +66,9 @@ app.use(views(__dirname + '/views', {
 app.use(async (ctx, next) => {
 	let start = Date.now();
 	try {
-		console.log(chalk.green('%s ') + chalk.gray('<--')
-			+ ' ' + chalk.bold('%s')
-			+ ' ' + chalk.gray('%s'),
+		console.log(chalk.green('%s') + chalk.gray(' <--')
+			+ chalk.bold(' %s')
+			+ chalk.gray(' %s'),
 			(new Date(start)).format('yyyy-M-d h:m:s.S'),
 			ctx.method,
 			ctx.originalUrl);
@@ -77,35 +77,34 @@ app.use(async (ctx, next) => {
 		await next();
 		let end = Date.now();
 		let ms =time(start,end);
-		console.log(chalk.green('%s ') + chalk.gray('-->')
-			+ ' ' + chalk.bold('%s')
-			+ ' ' + chalk.gray('%s')
-			+ ' ' + chalk.green('%s')
-			+ ' ' + chalk.gray('%s'),
+		//记录响应日志
+		logger.debug(formatOutput.formatRes(ctx,ms));
+		console.log(chalk.green('%s') + chalk.gray(' -->')
+			+ chalk.bold(' %s')
+			+ chalk.gray(' %s')
+			+ chalk.green(' %s')
+			+ chalk.gray(' %s'),
 			(new Date(end)).format('yyyy-M-d h:m:s.S'),
 			ctx.method,
 			ctx.originalUrl,
 			ctx.response.status,
 			ms);
-		//记录响应日志
-		// logger.debug(`${ctx.method} ${ctx.url} - ${ms}ms ctx.response.status: ${ctx.response.status}`);
-		// logger.debug(formatOutput.formatRes(ctx,ms));
 	} catch (error) {
 		let end = Date.now();
 		let ms =time(start,end);
-		console.log(chalk.red('%s ') + chalk.gray('-->')
-			+ ' ' + chalk.bold('%s')
-			+ ' ' + chalk.gray('%s')
-			+ ' ' + chalk.red('%s')
-			+ ' ' + chalk.gray('%s'),
+		// 错误信息开始
+		// logger.error(`${ctx.method} ${ctx.url} - ${ms}ms ctx.response.status: ${ctx.response.status}`);
+		logger.error(formatOutput.formatError(ctx,error,ms));
+		console.log(chalk.red('%s') + chalk.gray(' -->')
+			+ chalk.bold(' %s')
+			+ chalk.gray(' %s')
+			+ chalk.yellow(' %s')
+			+ chalk.gray(' %s'),
 			(new Date(end)).format('yyyy-M-d h:m:s.S'),
 			ctx.method,
 			ctx.originalUrl,
 			ctx.response.status,
 			ms);
-		// 错误信息开始
-		// logger.error(`${ctx.method} ${ctx.url} - ${ms}ms ctx.response.status: ${ctx.response.status}`);
-		logger.error(formatOutput.formatError(ctx,error,ms));
 	}
 });
 // Format output
@@ -131,14 +130,13 @@ var route = require('./middlewares/routesHelper');
 route.init(app);
 
 // 404 url error
-/*app.use(async (ctx, next) => {
-	// ctx.status = 404;
-	// throw new Error(ctx.message);
+app.use(async (ctx, next) => {
+	ctx.throw(404, ctx.message);
 	// await ctx.render('common/404')
-});*/
+});
 // error-handling log catch error
 app.on('error', (err, ctx) => {
-	console.error('server error', err, ctx);
+	console.log('server error:', err, ctx);
 });
 
 module.exports = app;
