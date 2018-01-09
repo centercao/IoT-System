@@ -3,6 +3,7 @@ const router = require('koa-router')();
 router.get('/', async (ctx, next) => {
 	var header =ctx.header;
 	var query = ctx.request.query;
+	ctx.throw(401, 'name required', { user: 1234});
 	ctx.body = {
 		message:"success"
 	};
