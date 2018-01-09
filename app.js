@@ -77,18 +77,8 @@ app.use(async (ctx, next) => {
 });
 
 // routes
-const index = require('./routes/index');
-app.use(index.routes(), index.allowedMethods());
-const users = require('./routes/users');
-app.use(users.routes(), users.allowedMethods());
-const devices = require('./routes/devices');
-app.use(devices.routes(), devices.allowedMethods());
-const deviceType = require('./routes/deviceType');
-app.use(deviceType.routes(), deviceType.allowedMethods());
-const gateway = require('./routes/gateway');
-app.use(gateway.routes(), gateway.allowedMethods());
-const sensor = require('./routes/sensor');
-app.use(sensor.routes(), sensor.allowedMethods());
+var route = require('./middlewares/routesHelper');
+route.init(app);
 
 // 404 url error
 /*app.use(async (ctx, next) => {
