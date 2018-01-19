@@ -13,6 +13,15 @@ router.prefix('/devices');
  * type
  * joined   join gateway -> gateDevices:x...x (set)
 ********************attributes******************************/
+
+router.head('/', function (ctx, next) {
+	let query = ctx.request.query;
+	let headers =ctx.header;
+	var status = ctx.response.status;
+	let mydata = ctx.app.context;
+	ctx.body = {head:`this is a devices/${id}  head response!`};// not return
+});
+
 // Patch an existing model instance or insert a new one into the data source.
 // 修补现有的模型实例或插入新的实例到数据源中。
 router.patch('/', function (ctx, next) {
@@ -21,6 +30,12 @@ router.patch('/', function (ctx, next) {
 // Find all instances of the model matched by filter from the data source.
 // 从数据源中找到与筛选器匹配的所有实例。
 router.get('/', function (ctx, next) {
+	let query = ctx.request.query;
+	let headers =ctx.header;
+	let accepts = ctx.accepts();
+	for(var key in query){//遍历json对象的每个key/value对,p为key
+		console.log(`key:${key},value:${query[key]}`);
+	}
 	ctx.body = 'this is a devices get response!';
 });
 // Replace an existing model instance or insert a new one into the data source
@@ -31,6 +46,13 @@ router.put('/', function (ctx, next) {
 // Create a new instance of the model and persist it into the data source.
 // 创建模型的一个新实例并将其持久化到数据源中。
 router.post('/', function (ctx, next) {
+	let body = ctx.request.body;
+	let headers =ctx.header;
+	let contentType = ctx.request.type;
+	console.log("headers:", headers);
+	for(var key in body){//遍历json对象的每个key/value对,p为key
+		console.log(`key:${key},value:${body[key]}`);
+	}
 	ctx.body = 'this is a devices post response';
 });
 // Patch attributes for a model instance and persist it into the data source.

@@ -4,7 +4,6 @@ const cors = require('koa2-cors'); // 跨域
 const views = require('koa-views');
 const json = require('koa-json');
 // const onerror = require('koa-onerror');
-const bodyparser = require('koa-bodyparser');
 const LogFile = require('./middlewares/logHelper');
 const Redis = require("./middlewares/redisHelper");
 const redis =new Redis("127.0.0.1",6379,"root@2017@2018");
@@ -41,21 +40,21 @@ function time(start,end) {
 		? delta + 'ms'
 		: Math.round(delta / 1000) + 's');
 }
-
+// Koa 推荐使用该命名空间挂载数据
+app.context.abc = "abcd";
 // error handler
 // onerror(app);
 
 // middlewares
 
 app.use(cors()); // 跨域
-app.use(bodyparser({
-	enableTypes: ['json', 'form', 'text']
-}));
+let koaBody = require('koa-body');
+app.use(koaBody({multipart: true}));
 app.use(json());
 
 // debug log
-const Logger = require('koa-logger');
-app.use(Logger());
+/*const Logger = require('koa-logger');
+app.use(Logger());*/
 // static file dir
 /*app.use(require('koa-static')(__dirname + '/public'));
 
