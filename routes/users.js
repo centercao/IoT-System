@@ -14,6 +14,17 @@ router.get('/', function (ctx, next) {
 });
 // Replace an existing model instance or insert a new one into the data source
 router.put('/', function (ctx, next) {
+	// 根据必要参数决定业务
+	if(ctx.state.data.user && ctx.state.data.password){ // 登录
+		console.log("user login...");
+	}else if(ctx.state.data.refreshToken){ //刷新 token
+		console.log("refresh token ...");
+	}else if(ctx.state.data.account && ctx.state.data.password && ctx.state.data.code){
+		console.log("refresh all token...")
+	}else{
+		ctx.throw(400,"参数错误");
+	}
+	let user = ctx.state.user;
 	ctx.body = 'this is a users put response';
 });
 // Create a new instance of the model and persist it into the data source.
@@ -38,11 +49,23 @@ router.head('/:id', function (ctx, next) {
 // Replace attributes for a model instance and persist it into the data source
 router.put('/:id', function (ctx, next) {
 	let id = ctx.params.id;
+	if(id && ctx.state.data.password && ctx.state.data.oldPassword){
+		console.log("change password...");
+	}else if(id && ctx.state.data.name){
+		console.log("change user name...");
+	}else {
+		ctx.throw(400,"参数错误");
+	}
 	ctx.body = `this is a users/${id} put response`;
 });
 // Delete a model instance by {{id}} from the data source.
 router.delete('/:id', function (ctx, next) {
 	let id = ctx.params.id;
+	if(id){ // 登出
+		console.log("user logout...");
+	}else{
+		ctx.throw(400,"参数错误");
+	}
 	ctx.body = `this is a users/${id} delete response`;
 });
 // Queries accessTokens of User.

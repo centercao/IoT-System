@@ -10,6 +10,7 @@ const redis =new Redis("127.0.0.1",6379,"root@2017@2018");
 const apiError = require("./middlewares/apiError");
 const FormatOutput = require("./middlewares/formatOutput");
 const formatOutput = new FormatOutput();
+const accessToken = require("./middlewares/accessToken");
 const logger = new LogFile({
 	appenders: {file: {filename: "./logs/api.log", maxLogSize: 2048000}},
 	categories: {
@@ -123,7 +124,8 @@ app.use(async (ctx, next) => {
 		throw error; // ->logs
 	}
 });
-
+// 登录检查
+app.use(accessToken.use);
 // routes
 var route = require('./middlewares/routesHelper');
 route.init(app);
