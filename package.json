@@ -1,13 +1,24 @@
 {
-  "name": "IoT System",
+  "name": "iotsystem",
   "version": "0.1.0",
-  "private": true,
+  "description": "a koa2 IoT System",
+  "main": "app.js",
   "scripts": {
     "start": "node bin/www",
     "dev": "./node_modules/.bin/nodemon bin/www",
-    "prd": "pm2 start bin/www",
+    "pm2": "pm2 start bin/www",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/centercao/IoT-System.git"
+  },
+  "author": "centercao",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/centercao/IoT-System/issues"
+  },
+  "homepage": "https://github.com/centercao/IoT-System#readme",
   "dependencies": {
     "chalk": "^2.3.0",
     "debug": "^2.6.3",
@@ -25,8 +36,5 @@
     "koa2-cors": "^2.0.5",
     "lodash": "^4.17.4",
     "log4js": "^2.3.12"
-  },
-  "devDependencies": {
-    "nodemon": "^1.8.1"
   }
 }

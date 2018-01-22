@@ -17,14 +17,18 @@ let accessToken = {
 			}
 		}
 		switch (uri) {
-			case "/users": {
-				if ("PUT" == method) {
-					if((ctx.state.data.user && ctx.state.data.password) || ctx.state.data.refreshToken){
-						console.log("user login or refresh token...");
-						break;
-					}
-				}
+			case "/users/login": {
+                if((ctx.state.data.user && ctx.state.data.password) || ctx.state.data.refreshToken){
+                    console.log("user login or refresh token...");
+                }
+                break;
 			}
+            case "/users/refreshAll": {
+                if((ctx.state.data.user && ctx.state.data.password) || ctx.state.data.refreshToken){
+                    console.log("user login or refresh token...");
+                }
+                break;
+            }
 			default: {
 				ctx.state.user = {
 					name:"name",

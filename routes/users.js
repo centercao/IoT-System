@@ -2,7 +2,13 @@
  * Created by center ON 17-11-27
  */
 const router = require('koa-router')()
-
+/*********************属性**********************
+ * account
+ * name
+ * password
+ * img
+ * login/logout：{token，reToken}
+ **********************属性*********************/
 router.prefix('/users');
 // Patch an existing model instance or insert a new one into the data source.
 router.patch('/', function (ctx, next) {
@@ -26,6 +32,39 @@ router.put('/', function (ctx, next) {
 	}
 	let user = ctx.state.user;
 	ctx.body = 'this is a users put response';
+});
+// Login a user with username/email and password.
+router.put('/login', function (ctx, next) {
+    console.log("user login...");
+    if(ctx.state.data.user && ctx.state.data.password){ // 登录
+        console.log("user login...");
+    }else{
+        ctx.throw(400,"参数错误");
+    }
+    ctx.body = `this is a users/login post response!`;
+});
+// Logout a user with username/email and password.
+router.put('/logout', function (ctx, next) {
+    console.log("user logout...");
+    ctx.body = `this is a users/logout put response!`;
+});
+router.put('/refreshToken', function (ctx, next) {
+    console.log("refresh token ...");
+    if(ctx.state.data.refreshToken){ //刷新 token
+        console.log("refresh token ...");
+    }else{
+        ctx.throw(400,"参数错误");
+    }
+    ctx.body = `this is a users/refreshToken put response!`;
+});
+router.put('/refreshAll', function (ctx, next) {
+    console.log("user refreshAll...");
+    if(ctx.state.data.account && ctx.state.data.password && ctx.state.data.code){
+        console.log("refresh all token...")
+    }else{
+        ctx.throw(400,"参数错误");
+    }
+    ctx.body = `this is a users/refreshAll put response!`;
 });
 // Create a new instance of the model and persist it into the data source.
 router.post('/', function (ctx, next) {
@@ -145,14 +184,6 @@ router.get('/count', function (ctx, next) {
 // Find first instance of the model matched by filter from the data source.
 router.get('/findOne', function (ctx, next) {
 	ctx.body = `this is a users/findOne get response!`;
-});
-// Login a user with username/email and password.
-router.post('/login', function (ctx, next) {
-	ctx.body = `this is a users/login post response!`;
-});
-// Logout a user with username/email and password.
-router.post('/logout', function (ctx, next) {
-	ctx.body = `this is a users/logout post response!`;
 });
 // Replace an existing model instance or insert a new one into the data source.
 router.post('/replaceOrCreate', function (ctx, next) {

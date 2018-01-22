@@ -5,8 +5,8 @@ const views = require('koa-views');
 const json = require('koa-json');
 // const onerror = require('koa-onerror');
 const LogFile = require('./middlewares/logHelper');
-const Redis = require("./middlewares/redisHelper");
-const redis =new Redis("127.0.0.1",6379,"root@2017@2018");
+/*const Redis = require("./middlewares/redisHelper");
+const redis =new Redis("127.0.0.1",6379,"root@2017@2018");*/
 const apiError = require("./middlewares/apiError");
 const FormatOutput = require("./middlewares/formatOutput");
 const formatOutput = new FormatOutput();
@@ -72,7 +72,6 @@ app.use(async (ctx, next) => {
 			(new Date(start)).format('yyyy-M-d h:m:s.S'),
 			ctx.method,
 			ctx.originalUrl);
-		ctx.state.redis = redis;
 		ctx.state.ApiError = apiError;
 		await next();
 		let end = Date.now();
