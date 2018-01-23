@@ -36,7 +36,7 @@ router.get('/', function (ctx, next) {
 	for(var key in query){//遍历json对象的每个key/value对,p为key
 		console.log(`key:${key},value:${query[key]}`);
 	}
-	ctx.body = 'this is a devices get response!';
+	ctx.body = {abc:123}; // 'this is a devices get response!';
 });
 // Replace an existing model instance or insert a new one into the data source
 // 替换现有的模型实例或将新实例插入到数据源中

@@ -52,10 +52,6 @@ app.use(cors()); // 跨域
 let koaBody = require('koa-body');
 app.use(koaBody({multipart: true}));
 app.use(json());
-
-// debug log
-/*const Logger = require('koa-logger');
-app.use(Logger());*/
 // static file dir
 /*app.use(require('koa-static')(__dirname + '/public'));
 
@@ -78,14 +74,15 @@ app.use(async (ctx, next) => {
 		let ms =time(start,end);
 		//记录响应日志
 		logger.debug(formatOutput.formatRes(ctx,ms));
-		console.log(chalk.green('%s') + chalk.gray(' -->')
+		console.log(chalk.green('%s')
+			+ chalk.gray(' -->')
 			+ chalk.bold(' %s')
-			+ chalk.gray(' %s')
+			+ chalk.gray(' res:%s')
 			+ chalk.green(' %s')
 			+ chalk.gray(' %s'),
 			(new Date(end)).format('yyyy-M-d h:m:s.S'),
 			ctx.method,
-			ctx.originalUrl,
+			JSON.stringify(ctx.body),
 			ctx.response.status,
 			ms);
 	} catch (error) {
@@ -94,14 +91,15 @@ app.use(async (ctx, next) => {
 		// 错误信息开始
 		// logger.error(`${ctx.method} ${ctx.url} - ${ms}ms ctx.response.status: ${ctx.response.status}`);
 		logger.error(formatOutput.formatError(ctx,error,ms));
-		console.log(chalk.red('%s') + chalk.gray(' -->')
+		console.log(chalk.red('%s')
+			+ chalk.gray(' -->')
 			+ chalk.bold(' %s')
-			+ chalk.gray(' %s')
+			+ chalk.gray(' res:%s')
 			+ chalk.yellow(' %s')
 			+ chalk.gray(' %s'),
 			(new Date(end)).format('yyyy-M-d h:m:s.S'),
 			ctx.method,
-			ctx.originalUrl,
+			JSON.stringify(ctx.body),
 			ctx.response.status,
 			ms);
 	}
@@ -109,6 +107,17 @@ app.use(async (ctx, next) => {
 // Format output
 app.use(async (ctx, next) => {
 	try {
+		let method = ctx.method;
+		let type = ctx.request.type;
+		if("GET" == method){
+			ctx.state.data = ctx.request.query;
+		}else{
+			if("multipart/form-data" == type){
+				ctx.state.data = ctx.request.body.fields;
+			}else{
+				ctx.state.data = ctx.request.body;
+			}
+		}
 		await next();
 		/*if (ctx.status != 200) {// system http code
 			ctx.throw(ctx.status, ctx.message);
@@ -116,8 +125,9 @@ app.use(async (ctx, next) => {
 	} catch (error) {
 		// format error(404: run time error,error of Third party module:422,Custom error)
 		ctx.body = {
-			message:error.message,
 			status:error.status || 422,
+			message:error.message,
+			details:error.details
 		};
 		ctx.status = ctx.body.status;
 		throw error; // ->logs
@@ -131,7 +141,7 @@ route.init(app);
 
 // 404 url error
 app.use(async (ctx, next) => {
-	ctx.throw(404, ctx.message);
+	ctx.throw(404, ctx.message,{details:{uri:ctx.request.originalUrl}});
 	// await ctx.render('common/404')
 });
 // error-handling log catch error
