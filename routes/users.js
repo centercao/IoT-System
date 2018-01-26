@@ -121,22 +121,43 @@ router.put('/:id/allToken', function (ctx, next) {
 router.post('/:id/image', function (ctx, next) {
 	let id = ctx.params.id;
 	var files=ctx.request.body.files;
-	for(var f in files){
-		let upFile= files[f].path;
-		if(files[f].size > 0){
-			let ext =files[f].name.replace(/.*\./,".");
-			let savPath = "public/images";
-			let saveFile =path.join(savPath, parseInt(Math.random()*100) + Date.parse(new Date()).toString() + ext);
-			ctx.assert(fs.existsSync(savPath), 422, "保存路径错误",{details:{savPath:savPath}});
-			ctx.assert(fs.existsSync(upFile), 422, "上传文件不存在",{details:{upFile:upFile}});
-			let writeStream = fs.createWriteStream(saveFile);//创建一个可写流
-			fs.createReadStream(upFile).pipe(writeStream).on("close",function () {
+	for(let f in files){ // 多标签
+		if(files[f].length){ // 多选
+			for(let p in files[f]){
+				let upFile= files[f][p].path;
+				if(files[f][p].size > 0){
+					let ext =files[f][p].name.replace(/.*\./,".");
+					let savPath = "public/images";
+					let saveFile =path.join(savPath, parseInt(Math.random()*100) + Date.parse(new Date()).toString() + ext);
+					ctx.assert(fs.existsSync(savPath), 422, "保存路径错误",{details:{savPath:savPath}});
+					ctx.assert(fs.existsSync(upFile), 422, "上传文件不存在",{details:{upFile:upFile}});
+					let writeStream = fs.createWriteStream(saveFile);//创建一个可写流
+					fs.createReadStream(upFile).pipe(writeStream).on("close",function () {
+						fs.unlinkSync(upFile); // 删除
+					});
+				}else{
+					ctx.assert(fs.existsSync(upFile), 422, "上传文件不存在",{details:{upFile:upFile}});
+					fs.unlinkSync(upFile); // 删除
+				}
+			}
+		}else {
+			let upFile= files[f].path;
+			if(files[f].size > 0){
+				let ext =files[f].name.replace(/.*\./,".");
+				let savPath = "public/images";
+				let saveFile =path.join(savPath, parseInt(Math.random()*100) + Date.parse(new Date()).toString() + ext);
+				ctx.assert(fs.existsSync(savPath), 422, "保存路径错误",{details:{savPath:savPath}});
+				ctx.assert(fs.existsSync(upFile), 422, "上传文件不存在",{details:{upFile:upFile}});
+				let writeStream = fs.createWriteStream(saveFile);//创建一个可写流
+				fs.createReadStream(upFile).pipe(writeStream).on("close",function () {
+					fs.unlinkSync(upFile); // 删除
+				});
+			}else{
+				ctx.assert(fs.existsSync(upFile), 422, "上传文件不存在",{details:{upFile:upFile}});
 				fs.unlinkSync(upFile); // 删除
-			});
-		}else{
-			ctx.assert(fs.existsSync(upFile), 422, "上传文件不存在",{details:{upFile:upFile}});
-			fs.unlinkSync(upFile); // 删除
+			}
 		}
+		
 	}
 	console.log("user upload image...");
 	ctx.body = `this is a uri:${ctx.url}  method:${ctx.request.method} response!`;
