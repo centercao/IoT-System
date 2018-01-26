@@ -1,4 +1,5 @@
 const Koa = require('koa');
+var path = require('path');
 const app = new Koa();
 const cors = require('koa2-cors'); // 跨域
 const views = require('koa-views');
@@ -50,7 +51,20 @@ app.context.db = "abcd";
 
 app.use(cors()); // 跨域
 let koaBody = require('koa-body');
-app.use(koaBody({multipart: true}));
+app.use(koaBody({
+	formLimit:"5mb",
+	jsonLimit:"5mb",
+	textLimit:"1mb",
+	multipart: true,
+	formidable:{
+		uploadDir:"public/images",
+		keepExtensions:true,
+		onFileBegin:function (name, file) {
+			let savPath = "public/images";
+			file.path =file.name.replace(/.*\./,path.join(savPath, parseInt(Math.random()*100) + Date.parse(new Date()).toString()) +".");
+		}
+	}
+}));
 app.use(json());
 // static file dir
 /*app.use(require('koa-static')(__dirname + '/public'));

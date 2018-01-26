@@ -129,12 +129,13 @@ router.post('/:id/image', function (ctx, next) {
 					let ext =files[f][p].name.replace(/.*\./,".");
 					let savPath = "public/images";
 					let saveFile =path.join(savPath, parseInt(Math.random()*100) + Date.parse(new Date()).toString() + ext);
-					ctx.assert(fs.existsSync(savPath), 422, "保存路径错误",{details:{savPath:savPath}});
+					// ctx.assert(fs.existsSync(savPath), 422, "保存路径错误",{details:{savPath:savPath}});
 					ctx.assert(fs.existsSync(upFile), 422, "上传文件不存在",{details:{upFile:upFile}});
-					let writeStream = fs.createWriteStream(saveFile);//创建一个可写流
+					// fs.renameSync(upFile,saveFile);
+					/*let writeStream = fs.createWriteStream(saveFile);//创建一个可写流
 					fs.createReadStream(upFile).pipe(writeStream).on("close",function () {
 						fs.unlinkSync(upFile); // 删除
-					});
+					});*/
 				}else{
 					ctx.assert(fs.existsSync(upFile), 422, "上传文件不存在",{details:{upFile:upFile}});
 					fs.unlinkSync(upFile); // 删除
@@ -146,12 +147,13 @@ router.post('/:id/image', function (ctx, next) {
 				let ext =files[f].name.replace(/.*\./,".");
 				let savPath = "public/images";
 				let saveFile =path.join(savPath, parseInt(Math.random()*100) + Date.parse(new Date()).toString() + ext);
-				ctx.assert(fs.existsSync(savPath), 422, "保存路径错误",{details:{savPath:savPath}});
+				// ctx.assert(fs.existsSync(savPath), 422, "保存路径错误",{details:{savPath:savPath}});
 				ctx.assert(fs.existsSync(upFile), 422, "上传文件不存在",{details:{upFile:upFile}});
-				let writeStream = fs.createWriteStream(saveFile);//创建一个可写流
+				// fs.renameSync(upFile,saveFile);
+				/*let writeStream = fs.createWriteStream(saveFile);//创建一个可写流
 				fs.createReadStream(upFile).pipe(writeStream).on("close",function () {
 					fs.unlinkSync(upFile); // 删除
-				});
+				});*/
 			}else{
 				ctx.assert(fs.existsSync(upFile), 422, "上传文件不存在",{details:{upFile:upFile}});
 				fs.unlinkSync(upFile); // 删除
