@@ -121,32 +121,22 @@ router.put('/:id/allToken', function (ctx, next) {
 router.post('/:id/image', function (ctx, next) {
 	let id = ctx.params.id;
 	var files=ctx.request.body.files;
-	if(files.length>0){
-		for(var item in files){
-			var tmpath= files[item]['path'];
-			var tmparr =files[item]['name'].split('.');
-			var ext ='.'+tmparr[tmparr.length-1];
-			var newpath =path.join('public/upload', parseInt(Math.random()*100) + Date.parse(new Date()).toString() + ext);
-			console.log(tmpath);
-			console.log(newpath);
-			var writeStream = fs.createWriteStream(newpath);//创建一个可写流
-			fs.createReadStream(tmpath).pipe(writeStream);//可读流通过管道写入可写流
-			writeStream.on('close',function(){
-				fs.unlinkSync(tmpath);
-				console.log('copy over');
+	for(var f in files){
+		let upFile= files[f].path;
+		if(files[f].size > 0){
+			let ext =files[f].name.replace(/.*\./,".");
+			let savPath = "public/images";
+			let saveFile =path.join(savPath, parseInt(Math.random()*100) + Date.parse(new Date()).toString() + ext);
+			ctx.assert(fs.existsSync(savPath), 422, "保存路径错误",{details:{savPath:savPath}});
+			ctx.assert(fs.existsSync(upFile), 422, "上传文件不存在",{details:{upFile:upFile}});
+			let writeStream = fs.createWriteStream(saveFile);//创建一个可写流
+			fs.createReadStream(upFile).pipe(writeStream).on("close",function () {
+				fs.unlinkSync(upFile); // 删除
 			});
+		}else{
+			ctx.assert(fs.existsSync(upFile), 422, "上传文件不存在",{details:{upFile:upFile}});
+			fs.unlinkSync(upFile); // 删除
 		}
-	}else{
-		//当files为对象时即只有一个文件被上传
-		let tmPath= files.file['path'];
-		let tmpArr =files.file['name'].split('.');
-		let ext ='.'+tmpArr[tmpArr.length-1];
-		let newPath =path.join('public/images', parseInt(Math.random()*100) + Date.parse(new Date()).toString() + ext);
-		let writeStream = fs.createWriteStream(newPath);//创建一个可写流
-		fs.createReadStream(tmPath).pipe(writeStream).on("close",function () {
-			fs.unlinkSync(tmPath); // 删除
-		});
-		
 	}
 	console.log("user upload image...");
 	ctx.body = `this is a uri:${ctx.url}  method:${ctx.request.method} response!`;
