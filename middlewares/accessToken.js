@@ -5,7 +5,7 @@ let accessToken = {
 	use: async function (ctx, next) {
 		let uri = ctx.url;
 		// let reg = new RegExp("(^/users/.*?/login|^/users/.*?/refreshAll)"); //uri = uri.replace(/([\?][^\?]+)$/, "");
-		let reg = /(^\/users\/.*?\/login|^\/users\/.*?\/accessTokens|^\/users\/.*?\/allToken)/;
+		let reg = /(^\/users\/.[^\/]+\/login|^\/users\/.[^\/]+\/accessTokens|^\/users\/.[^\/]+\/allToken)/;
 		let noCheck = reg.test(uri);
 		if(noCheck){
 			console.log("not check token...");

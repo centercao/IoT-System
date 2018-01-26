@@ -42,7 +42,7 @@ function time(start,end) {
 		: Math.round(delta / 1000) + 's');
 }
 // Koa 推荐使用该命名空间挂载数据
-app.context.abc = "abcd";
+app.context.db = "abcd";
 // error handler
 // onerror(app);
 
@@ -107,17 +107,6 @@ app.use(async (ctx, next) => {
 // Format output
 app.use(async (ctx, next) => {
 	try {
-		let method = ctx.method;
-		let type = ctx.request.type;
-		if("GET" == method){
-			ctx.state.data = ctx.request.query;
-		}else{
-			if("multipart/form-data" == type){
-				ctx.state.data = ctx.request.body.fields;
-			}else{
-				ctx.state.data = ctx.request.body;
-			}
-		}
 		await next();
 		/*if (ctx.status != 200) {// system http code
 			ctx.throw(ctx.status, ctx.message);
