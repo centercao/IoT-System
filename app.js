@@ -1,17 +1,23 @@
 const Koa = require('koa');
 var path = require('path');
-const app = new Koa();
+let koaBody = require('koa-body');
 const cors = require('koa2-cors'); // 跨域
-const views = require('koa-views');
-const json = require('koa-json');
+const chalk = require('chalk'); // color
+// const server = require('koa-static');
+// const views = require('koa-views'); // views
+// const json = require('koa-json');
 // const onerror = require('koa-onerror');
+// local
 const LogFile = require('./middlewares/logHelper');
 /*const Redis = require("./middlewares/redisHelper");
 const redis =new Redis("127.0.0.1",6379,"root@2017@2018");*/
 const apiError = require("./middlewares/apiError");
 const FormatOutput = require("./middlewares/formatOutput");
-const formatOutput = new FormatOutput();
 const accessToken = require("./middlewares/accessToken");
+
+
+const app = new Koa();
+const formatOutput = new FormatOutput();
 const logger = new LogFile({
 	appenders: {file: {filename: "./logs/api.log", maxLogSize: 2048000}},
 	categories: {
@@ -19,7 +25,6 @@ const logger = new LogFile({
 	},
 	pm2InstanceVar: 'INSTANCE_ID_API'
 });
-const chalk = require('chalk');
 // function
 Date.prototype.format = function (fmt) { //author: meizz
 	var o = {
@@ -50,24 +55,10 @@ app.context.db = "abcd";
 // middlewares
 
 app.use(cors()); // 跨域
-let koaBody = require('koa-body');
-app.use(koaBody({
-	formLimit:"5mb",
-	jsonLimit:"5mb",
-	textLimit:"1mb",
-	multipart: true,
-	formidable:{
-		uploadDir:"public/images",
-		keepExtensions:true,
-		onFileBegin:function (name, file) {
-			let savPath = "public/images";
-			file.path =file.name.replace(/.*\./,path.join(savPath, parseInt(Math.random()*100) + Date.parse(new Date()).toString()) +".");
-		}
-	}
-}));
-app.use(json());
+
+// app.use(json());
 // static file dir
-/*app.use(require('koa-static')(__dirname + '/public'));
+/*app.use(server(__dirname + '/public'));
 
 app.use(views(__dirname + '/views', {
 	map: {html: 'ejs'}
@@ -138,6 +129,21 @@ app.use(async (ctx, next) => {
 });
 // 登录检查
 app.use(accessToken.use);
+app.use(koaBody({
+	formLimit:"5mb",
+	jsonLimit:"5mb",
+	textLimit:"1mb",
+	multipart: true,
+	formidable:{
+		uploadDir:"public/images",
+		keepExtensions:true,
+		onFileBegin:function (name, file) {
+			let fileName = parseInt(Math.random()*100) + Date.parse(new Date()).toString();
+			file.name = file.name.replace(/.+(?=\.)/,path.join("images", fileName));
+			file.path = path.join("public" ,file.name);
+		}
+	}
+}));
 // routes
 var route = require('./middlewares/routesHelper');
 route.init(app);

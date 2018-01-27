@@ -60,14 +60,8 @@ router.patch('/:id', function (ctx, next) {
 // Replace attributes for a model instance and persist it into the data source
 router.put('/:id', function (ctx, next) {
 	let id = ctx.params.id;
-	if(id && ctx.request.body.password && ctx.request.body.oldPassword){
-		console.log("change password...");
-	}else if(id && ctx.request.body.name){
-		console.log("change user name...");
-	}else {
-		ctx.throw(400,"参数错误");
-	}
-	ctx.body = `this is a uri:"${ctx.url}" method:${ctx.request.method} response!`;
+	let body = ctx.request.body;
+	ctx.body = ctx.body = { foo: 'bar' };//`this is a uri:"${ctx.url}" method:${ctx.request.method} response!`;
 });
 // Delete a model instance by {{id}} from the data source.
 router.delete('/:id', function (ctx, next) {
@@ -126,40 +120,24 @@ router.post('/:id/image', function (ctx, next) {
 			for(let p in files[f]){
 				let upFile= files[f][p].path;
 				if(files[f][p].size > 0){
-					let ext =files[f][p].name.replace(/.*\./,".");
-					let savPath = "public/images";
-					let saveFile =path.join(savPath, parseInt(Math.random()*100) + Date.parse(new Date()).toString() + ext);
-					// ctx.assert(fs.existsSync(savPath), 422, "保存路径错误",{details:{savPath:savPath}});
-					ctx.assert(fs.existsSync(upFile), 422, "上传文件不存在",{details:{upFile:upFile}});
-					// fs.renameSync(upFile,saveFile);
-					/*let writeStream = fs.createWriteStream(saveFile);//创建一个可写流
-					fs.createReadStream(upFile).pipe(writeStream).on("close",function () {
-						fs.unlinkSync(upFile); // 删除
-					});*/
+                    ctx.assert(fs.existsSync(upFile), 422, "上传文件不存在",{details:{uploadFile:upFile}});
+					console.log(`fileName:${files[f][p].name}`);
 				}else{
-					ctx.assert(fs.existsSync(upFile), 422, "上传文件不存在",{details:{upFile:upFile}});
+					ctx.assert(fs.existsSync(upFile), 422, "上传文件不存在",{details:{uploadFile:upFile}});
 					fs.unlinkSync(upFile); // 删除
 				}
 			}
 		}else {
 			let upFile= files[f].path;
 			if(files[f].size > 0){
-				let ext =files[f].name.replace(/.*\./,".");
-				let savPath = "public/images";
-				let saveFile =path.join(savPath, parseInt(Math.random()*100) + Date.parse(new Date()).toString() + ext);
-				// ctx.assert(fs.existsSync(savPath), 422, "保存路径错误",{details:{savPath:savPath}});
-				ctx.assert(fs.existsSync(upFile), 422, "上传文件不存在",{details:{upFile:upFile}});
-				// fs.renameSync(upFile,saveFile);
-				/*let writeStream = fs.createWriteStream(saveFile);//创建一个可写流
-				fs.createReadStream(upFile).pipe(writeStream).on("close",function () {
-					fs.unlinkSync(upFile); // 删除
-				});*/
+				ctx.assert(fs.existsSync(upFile), 422, "上传文件失败",{details:{upFile:upFile}});
+                console.log(`fileName:${files[f].name}`);
 			}else{
-				ctx.assert(fs.existsSync(upFile), 422, "上传文件不存在",{details:{upFile:upFile}});
+				ctx.assert(fs.existsSync(upFile), 422, "上传文件失败",{details:{upFile:upFile}});
 				fs.unlinkSync(upFile); // 删除
 			}
 		}
-		
+
 	}
 	console.log("user upload image...");
 	ctx.body = `this is a uri:${ctx.url}  method:${ctx.request.method} response!`;
