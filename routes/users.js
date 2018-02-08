@@ -20,7 +20,10 @@ router.patch('/', function (ctx, next) {
 });
 // Find all instances of the model matched by filter from the data source.
 router.get('/', function (ctx, next) {
-	ctx.body = 'this is a users get response!';
+	// ctx.res.setHeader('Content-Type', 'image/png');
+	ctx.body = fs.readFileSync('image.png');
+	console.log("");
+	// ctx.body = 'this is a users get response!';
 });
 // Replace an existing model instance or insert a new one into the data source
 router.put('/', function (ctx, next) {
