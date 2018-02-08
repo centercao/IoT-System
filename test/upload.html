@@ -1,0 +1,51 @@
+<html>
+  <head>
+    <meta name="generator"
+    content="HTML Tidy for HTML5 (experimental) for Windows https://github.com/w3c/tidy-html5/tree/c63cc39" />
+	<script src="jquery-3.3.1.min.js" type="text/javascript"></script>
+    <title></title>
+  </head>
+  <body>
+  <form id="uploadForm" action="" method="post" enctype="multipart/form-data">  
+        <!--<input type="file" name="file"/> <br> -->
+		<input name="userfile1" type="file" multiple="multiple" ><br>
+        <!--<input type="submit" value="ok"/> -->
+		<input id="btnImportOK" type="button" value="上传" />
+    </form>  
+  <script language="javascript">
+  $(document).ready(function () {
+      $("#btnImportOK").click(function () {
+          var formData = new FormData($("#uploadForm")[0]);
+          $.ajax({
+              cache: true,
+              type: "post",
+              timeout: 2000,
+              data: formData,
+              url: "http://127.0.0.1:4000/users/BVvT4QJrrwJ6MQJy/image",
+              contentType: false,
+              processData: false,
+              async: true,
+              headers: { // 叠加式添加
+                  accessToken: "abcd"
+              },
+              beforeSend: function (xhr) {
+                  // xhr.setRequestHeader('accessToken', 'test-value'); // 叠加式添加
+              },
+              error: function (xhr, statusText, errorThrown) { // XMLHttpRequest
+                  alert("错误提示： status:" + xhr.status + " responseText:" + xhr.responseText);
+              },
+              success: function (result, statusText, xhr) {
+                  alert(result + ",statusText:" + statusText + ",status:" + xhr.status);
+              },
+              complete: function (xhr, statusText) { //请求完成后最终执行参数
+                  　　　　if(statusText == 'timeout') { //超时,status还有success,error等值的情况
+                      　　　　　 alert("超时");
+                  }
+                  　　
+              }
+          });
+      });
+  });
+  </script>
+  </body>
+</html>
