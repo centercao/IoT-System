@@ -17,12 +17,14 @@ router.prefix('/users');
 // Patch an existing model instance or insert a new one into the data source.
 router.patch('/', function (ctx, next) {
 	ctx.body = 'this is a users patch response!';
+	
+	// ctx.res.setHeader('Content-Type', 'image/png');
+	// ctx.body = fs.readFileSync('image.png');
 });
 // Find all instances of the model matched by filter from the data source.
 router.get('/', function (ctx, next) {
-	// ctx.res.setHeader('Content-Type', 'image/png');
-	ctx.body = fs.readFileSync('image.png');
-	console.log("");
+	ctx.body = 'this is a users get response!';
+	console.log("get users....");
 	// ctx.body = 'this is a users get response!';
 });
 // Replace an existing model instance or insert a new one into the data source

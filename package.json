@@ -34,5 +34,9 @@
     "koa2-cors": "^2.0.5",
     "lodash": "^4.17.4",
     "log4js": "^2.3.12"
+  },
+  "devDependencies": {
+    "should": "^13.2.1",
+    "supertest": "^3.0.0"
   }
 }
