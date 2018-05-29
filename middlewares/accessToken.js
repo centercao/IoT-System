@@ -11,12 +11,12 @@ let accessToken = {
 			console.log("not check token...");
 		}else {
 			console.log("check token...");
-			ctx.state.user = {
+			/*ctx.state.user = {
 				name:"name",
 				account:"15052221631",
 				img:"image/15052221631.png",
 				token:"token"
-			};
+			};*/
 			//ctx.throw(401, 'token fail', { user: 1234});
 		}
 		return await next();

@@ -26,7 +26,7 @@ const logger = new LogFile({
 	pm2InstanceVar: 'INSTANCE_ID_API'
 });
 // function
-Date.prototype.format = function (fmt) { //author: meizz
+Date.prototype.format = function (fmt) {
 	var o = {
 		"M+": this.getMonth() + 1, //月份
 		"d+": this.getDate(), //日
@@ -117,13 +117,11 @@ app.use(async (ctx, next) => {
 			ctx.throw(ctx.status, ctx.message);
 		}*/
 	} catch (error) {
-		// format error(404: run time error,error of Third party module:422,Custom error)
 		ctx.body = {
-			status:error.status || 422,
 			message:error.message,
 			details:error.details
 		};
-		ctx.status = ctx.body.status;
+		ctx.status = error.status || 503;
 		throw error; // ->logs
 	}
 });
